@@ -1,4 +1,4 @@
-const map = "/images/map.jpg";
+const map = "./images/map.jpg";
 
 var canvas, ctx, flag = false,
 	prevX = 0,
