@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html id="html">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Interactive Map</title>
+	<link rel="icon" href="images/nato.png">
+    <link href="style.css" rel="stylesheet" type="text/css" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.3.0/math.min.js"></script>
+  </head>
+  <body id="body">
+	<script src="imports.js"></script>
+	
+	<div id="screen"></div>
+	<div id="help">
+		<h2 style="margin-block-start: 0px;">Keyboard Shortcuts</h2>
+		<table style="width: 100%;">
+			<tr><td>Ctrl + Z</td><td>=></td><td>Undo drawing</td></tr>
+			<tr><td>Ctrl + Y</td><td>=></td><td>Redo drawing</td></tr>
+			<tr><td>Ctrl + C</td><td>=></td><td>Clear all lines and units</td></tr>
+			<tr><td>Del</td><td>=></td><td>Toggle delete unit</td></tr>
+			<tr><td>-</td><td>=></td><td>Zoom out</td></tr>
+			<tr><td>=</td><td>=></td><td>Zoom in</td></tr>
+			<tr><td>p</td><td>=></td><td>Play animation</td></tr>
+			<tr><td>[</td><td>=></td><td>Add Keyframe</td></tr>
+			<tr><td>]</td><td>=></td><td>Remove Keyframe</td></tr>
+		</table>
+		<div id="closeHelp" class="mb" onclick="showHelp()" style="color: red;"><p><b>X</b></p></div>
+	</div>
+
+	<div style="width: 210px; height: 100vh; margin: 0px; position: fixed; background-color: white; z-index: 50;">
+		<div style="background: #dddddd;" class="taskbar">
+			<div id="mb00" class="mb" onclick="showHelp()"><p><b>?</b></p></div>
+			<div id="mb01" class="mb" onclick="updateUnitColour(this)" style="background: rgb(128, 224, 255)"></div>
+			<div id="mb02" class="mb" onclick="updateUnitColour(this)"></div>
+		</div>
+		<div style="background: #dddddd;" class="taskbar">
+			<div id="mb1" class="mb" onclick="showMenu(this)" style="background: #aaaaaa"></div>
+			<div id="mb2" class="mb" onclick="showMenu(this)"></div>
+			<div id="mb3" class="mb" onclick="showMenu(this)"></div>
+			<div id="mb4" class="mb" onclick="showMenu(this)"></div>
+			<div id="mb5" class="mb" onclick="showMenu(this)"></div>
+			<div id="mb6" class="mb" onclick="showMenu(this)"></div>
+			<div id="mb7" class="mb" onclick="showMenu(this)""></div>
+			<br>
+			<div id="menu1" style="display: block">
+				<button onclick="create(this)" id="b11">New Military Police</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b12">New Infantry</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b13">New Motorized Infantry</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b14">New Artillery</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b15">New Anti Tank</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b16">New Anti Air</button>
+				<br><br><br>
+				<br><br><br>
+				<br><br><br>
+				<button onclick="deleteElement()" id="bz1">Delete Unit</button>
+				<p id="deleteOn" style="color: red; display: none">Delete Toggle On</p>
+				<br><br><br>
+				<button onclick="deleteAllElements()" id="bz2">Delete All Units</button>
+			</div>
+			<div id="menu2" style="display: none">
+				<button onclick="create(this)" id="b21">New Armoured Car</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b22">New Light Tank</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b23">New Medium Tank</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b24">New Heavy Tank</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b25">New Tank Destroyer</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b26">New SP Artillery</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b27">New SP Anti Air</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b28">New Mechanized Infantry</button>
+			</div>
+			<div id="menu3" style="display: none">
+				<button onclick="create(this)" id="b31">New Interceptor</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b32">New Bomber</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b33">New Fighter</button>
+			</div>
+			<div id="menu4" style="display: none">
+				<button onclick="create(this)" id="b41">New Destroyer</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b42">New Submarine</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b43">New Cruiser</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b44">New Battleship</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b45">New Carrier</button>
+				<br><br><br>
+				<button onclick="create(this)" id="b46">New Convoy</button>
+			</div>
+			<div id="menu5" style="display: none">
+				<button onclick="color(this)" id="b51">Black Line</button>
+				<br><br><br>
+				<button onclick="color(this)" id="b52">Blue Line</button>
+				<br><br><br>
+				<button onclick="color(this)" id="b53">Red Line</button>
+				<br><br><br>
+				<button onclick="color(this)" id="b54">Green Line</button>
+				<br><br><br>
+				<button onclick="color(this)" id="b55">Yellow Line</button>
+				<br><br><br>
+				<label for="customColor">Custom: </label><input type="color" value="#ff0000" id="customColor">
+				<br>
+				<label for="customStroke">Size: </label><input type="range" min="1" max="100" value="20" id="customStroke">
+				<br><br><br>
+				<button onclick="color(this)" id="b56">Cancel Line</button>
+				<br><br><br>
+				<button onclick="erase()" id="b57">Clear Lines</button>
+				<br><br><br>
+				<button onclick="undo()" id="b58">Undo</button> &nbsp;
+				<button onclick="redo()" id="b59">Redo</button>
+			</div>
+			<div id="menu6" style="display: none">
+				<button onclick="zoom(2)" id="b61">Zoom In</button>
+				<br><br><br>
+				<button onclick="zoom(0.5)" id="b62">Zoom Out</button>
+				<br><br><br>
+				<p id="zoom" style="color: red;">Scale: <span id="zoom1">1</span></p>
+			</div>
+			<div id="menu7" style="display: none">
+				<button onclick="saveKeyframe()" id="b71">Save Keyframe</button>
+				<p id="numFrames" style="color: red;">Total Frames: <span id="numFrames1">0</span></p>
+				<button onclick="removeLastFrame()" id="b72">Remove Last Keyframe</button>
+				<br><br><br>
+				<button onclick="clearKeyframes()" id="b73">Reset</button>
+				<br><br><br>
+				<button onclick="playRecording()" id="b74">Play</button>
+				<br><br><br>
+				<label for="frames">Quality: <span id="frames1" style="color: red;">100</span></label><br><input type="range" min="10" max="1000" value="100" id="frames">
+				<br>
+				<label for="seconds">Speed: <span id="seconds1" style="color: red;">5</span></label><br><input type="range" min="0" max="9.999" step="0.001" value="5" id="seconds">
+				<br>
+				<label for="rate_func">Rate Function: <span id="rate_func1" style="color: red;">Linear</span></label><br><input type="range" min="0" max="4" value="0" id="rate_func">
+				<br>
+				<label for="inflection">Inflection: <span id="inflection1" style="color: red;">5</span></label><br><input type="range" min="1" max="20" value="5" id="inflection">
+			</div>
+		</div>
+	</div>
+
+	<div style="margin-left: 210px; margin-top: 0px; display: flex;">
+		<canvas id="canvas" style="background: url('/images/map.jpg');"></canvas>
+	</div>
+	
+  </body>
+</html>
